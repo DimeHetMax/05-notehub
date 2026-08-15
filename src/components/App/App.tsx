@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNotesQuery } from "../../hooks/useNotesQuery";
-
+import { useDebounce } from "use-debounce";
 import css from "./App.module.css";
 
 import NoteList from "../NoteList/NoteList";
@@ -15,20 +15,19 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
-  const { data, isFetching, isError, error, isSuccess } = useNotesQuery({
+  const [searchInputDebounced] = useDebounce(searchInput, 500);
+  const { data, isPending, isError, error, isSuccess } = useNotesQuery({
     currentPage,
-    searchInput,
+    searchInput: searchInputDebounced,
   });
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
   const handleSearchOnChange = (value: string) => {
-      setSearchInput(value);
-      setPage(1);
-   
+    setSearchInput(value);
+    setPage(1);
   };
-  const showNoteList =
-    !isFetching && !isError && data && data?.notes.length > 0;
+  const showNoteList = !isError && data && data?.notes.length > 0;
 
   return (
     <div className={css.app}>
@@ -46,7 +45,7 @@ const App = () => {
         </button>
       </header>
 
-      {isFetching && <LoaderComponent />}
+      {isPending && <LoaderComponent />}
       {isError && (
         <ErrorComponent>
           <p>{`${error.message}`}</p>

@@ -2,9 +2,10 @@ import { object, string } from "yup";
 import { Formik, Form, Field, type FormikHelpers, ErrorMessage } from "formik";
 import css from "./NoteForm.module.css";
 import type { NoteTag } from "../../types/note";
-import { useNotesMutation } from "../../hooks/useNotesMutatePost";
-
-interface InicialValues {
+// import { useNotesMutation } from "../../hooks/useNotesMutatePost";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
+interface InitialValues {
   title: string;
   content: string;
   tag: NoteTag;
@@ -12,13 +13,13 @@ interface InicialValues {
 interface NoteFormProps {
   handleModalClose: () => void;
 }
-const inicialValues: InicialValues = {
+const InitialValues: InitialValues = {
   title: "",
   content: "",
   tag: "Todo",
 };
 
-const NoteFormScheama = object({
+const NoteFormSchema = object({
   title: string().min(3).max(50).required("Fill out the title"),
   content: string().max(500),
   tag: string()
@@ -26,10 +27,19 @@ const NoteFormScheama = object({
     .required("Select the type"),
 });
 const NoteForm = ({ handleModalClose }: NoteFormProps) => {
-  const { mutate } = useNotesMutation(handleModalClose);
+  // const { mutate } = useNotesMutation(handleModalClose);
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      handleModalClose();
+    },
+  });
   const onSubmitForm = (
-    values: InicialValues,
-    actions: FormikHelpers<InicialValues>,
+    values: InitialValues,
+    actions: FormikHelpers<InitialValues>,
   ) => {
     mutate(values);
     actions.resetForm();
@@ -37,9 +47,9 @@ const NoteForm = ({ handleModalClose }: NoteFormProps) => {
 
   return (
     <Formik
-      initialValues={inicialValues}
+      initialValues={InitialValues}
       onSubmit={onSubmitForm}
-      validationSchema={NoteFormScheama}
+      validationSchema={NoteFormSchema}
     >
       <Form className={css.form}>
         <div className={css.formGroup}>
