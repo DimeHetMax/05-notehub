@@ -20,12 +20,12 @@ export const fetchNotes = async (
   return response.data;
 };
 
-export const createNote = async (body: Pick<Note, "title" | "content" | "tag">) => {
+export const createNote = async (body: Pick<Note, "title" | "content" | "tag">):Promise<Note> => {
   const response = await API.post<Note>("/notes", body);
-  console.log(response.data);
+  return response.data;
 };
 
-export const deleteNote = async(id: string) => {
- const response = await API.delete(`/notes/${id}`);
- console.log(response.data);
+export const deleteNote = async(id: string):Promise<Note> => {
+ const response = await API.delete<Note>(`/notes/${id}`);
+ return response.data
 };

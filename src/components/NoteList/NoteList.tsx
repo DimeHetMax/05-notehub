@@ -1,10 +1,11 @@
 import css from "./NoteList.module.css";
 import type { Note } from "../../types/note";
+import { useNotesMutationDelete } from "../../hooks/useNotesMutationDelete";
 interface NoteListProps {
   notes: Note[];
-  deleteNoteFn:(id: string)=>void
 }
-const NoteList = ({ notes , deleteNoteFn}: NoteListProps) => {
+const NoteList = ({ notes }: NoteListProps) => {
+   const {mutate} = useNotesMutationDelete()
   return (
     <ul className={css.list}>
       {notes.map(({ title, id, content, tag }) => (
@@ -13,7 +14,7 @@ const NoteList = ({ notes , deleteNoteFn}: NoteListProps) => {
           <p className={css.content}>{content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{tag}</span>
-            <button className={css.button} onClick={()=> deleteNoteFn(id)}>Delete</button>
+            <button className={css.button} onClick={()=> mutate(id)}>Delete</button>
           </div>
         </li>
       ))}

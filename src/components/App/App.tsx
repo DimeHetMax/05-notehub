@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNotesQuery } from "../../hooks/useNotesQuery";
 import { useNotesMutation } from "../../hooks/useNotesMutatePost";
-import { useNotesMutationDelete } from "../../hooks/useNotesMutationDelete";
+
 import css from "./App.module.css";
 
 import NoteList from "../NoteList/NoteList";
@@ -20,18 +20,18 @@ const App = () => {
     currentPage,
     searchInput,
   });
-  const postNote = useNotesMutation();
-  const deleteNote = useNotesMutationDelete()
-  const showNoteList =
-    !isFetching || postNote.isPending && !isError && data && data?.notes.length > 0;
-
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+  const postNote = useNotesMutation(handleModalClose);
+  const showNoteList =
+    !isFetching || postNote.isPending && !isError && data && data?.notes.length > 0;
+
+  
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox setSearchInput={setSearchInput} setPage={setPage} />
+        <SearchBox onChange={setSearchInput} />
         {showNoteList && isSuccess && data.totalPages >= 1 && (
           <Pagination
             totalPages={data.totalPages}
@@ -50,7 +50,7 @@ const App = () => {
           <p>{`${error.message}`}</p>
         </ErrorComponent>
       )}
-      {showNoteList && isSuccess && <NoteList notes={data.notes} deleteNoteFn={deleteNote.mutate}/>}
+      {showNoteList && isSuccess && <NoteList notes={data.notes} />}
       {isModalOpen && (
         <Modal onBackDropClose={handleModalClose}>
           <NoteForm handleModalClose={handleModalClose} mutateFn={postNote.mutate} />

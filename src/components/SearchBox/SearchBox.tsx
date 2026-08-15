@@ -2,14 +2,13 @@ import css from "./SearchBox.module.css";
 import { useDebouncedCallback } from "use-debounce";
 
 interface SearchBoxProps {
-  setSearchInput: (search: string) => void;
-  setPage: (pageNumber: number) => void;
+  onChange: (value: string) => void;
+
 }
-const SearchBox = ({ setSearchInput, setPage }: SearchBoxProps) => {
+const SearchBox = ({ onChange }: SearchBoxProps) => {
   const onChangeDebounced = useDebouncedCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchInput(event.target.value.trim());
-      setPage(1);
+      onChange(event.target.value.trim());
     },
     1000,
   );

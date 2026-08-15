@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import { object, string } from "yup";
 import { Formik, Form, Field, type FormikHelpers, ErrorMessage } from "formik";
 import css from "./NoteForm.module.css";
@@ -22,7 +22,7 @@ const inicialValues: InicialValues = {
 
 const NoteFormScheama = object({
   title: string().min(3).max(50).required("Fill out the title"),
-  content: string().max(500).required("Fill out the content!"),
+  content: string().max(500),
   tag: string()
     .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"], "Choose one")
     .required("Select the type"),
@@ -34,21 +34,10 @@ const NoteForm = ({ handleModalClose, mutateFn}: NoteFormProps) => {
     actions: FormikHelpers<InicialValues>,
   ) => {
     mutateFn(values)
-    handleModalClose()
     actions.resetForm();
   };
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "Escape") handleModalClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [handleModalClose]);
+
   return (
     <Formik
       initialValues={inicialValues}
