@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNotesQuery } from "../../hooks/useNotesQuery";
-import { useNotesMutation } from "../../hooks/useNotesMutatePost";
 
 import css from "./App.module.css";
 
@@ -23,15 +22,18 @@ const App = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
-  const postNote = useNotesMutation(handleModalClose);
+  const handleSearchOnChange = (value: string) => {
+      setSearchInput(value);
+      setPage(1);
+   
+  };
   const showNoteList =
-    !isFetching || postNote.isPending && !isError && data && data?.notes.length > 0;
+    !isFetching && !isError && data && data?.notes.length > 0;
 
-  
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onChange={setSearchInput} />
+        <SearchBox onChange={handleSearchOnChange} />
         {showNoteList && isSuccess && data.totalPages >= 1 && (
           <Pagination
             totalPages={data.totalPages}
@@ -53,7 +55,7 @@ const App = () => {
       {showNoteList && isSuccess && <NoteList notes={data.notes} />}
       {isModalOpen && (
         <Modal onBackDropClose={handleModalClose}>
-          <NoteForm handleModalClose={handleModalClose} mutateFn={postNote.mutate} />
+          <NoteForm handleModalClose={handleModalClose} />
         </Modal>
       )}
     </div>

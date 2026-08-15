@@ -3,21 +3,19 @@ import { useDebouncedCallback } from "use-debounce";
 
 interface SearchBoxProps {
   onChange: (value: string) => void;
-
 }
 const SearchBox = ({ onChange }: SearchBoxProps) => {
-  const onChangeDebounced = useDebouncedCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(event.target.value.trim());
-    },
-    1000,
-  );
+  const onChangeDebounced = useDebouncedCallback((value: string) => {
+    onChange(value);
+  }, 500);
   return (
     <input
       className={css.input}
       type="text"
       placeholder="Search notes"
-      onChange={onChangeDebounced}
+      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+        onChangeDebounced(event.target.value.trim())
+      }
     />
   );
 };

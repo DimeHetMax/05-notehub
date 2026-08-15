@@ -1,9 +1,8 @@
-
 import { object, string } from "yup";
 import { Formik, Form, Field, type FormikHelpers, ErrorMessage } from "formik";
 import css from "./NoteForm.module.css";
 import type { NoteTag } from "../../types/note";
-
+import { useNotesMutation } from "../../hooks/useNotesMutatePost";
 
 interface InicialValues {
   title: string;
@@ -12,7 +11,6 @@ interface InicialValues {
 }
 interface NoteFormProps {
   handleModalClose: () => void;
-  mutateFn: (data: InicialValues)=>void
 }
 const inicialValues: InicialValues = {
   title: "",
@@ -27,16 +25,15 @@ const NoteFormScheama = object({
     .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"], "Choose one")
     .required("Select the type"),
 });
-const NoteForm = ({ handleModalClose, mutateFn}: NoteFormProps) => {
-
+const NoteForm = ({ handleModalClose }: NoteFormProps) => {
+  const { mutate } = useNotesMutation(handleModalClose);
   const onSubmitForm = (
     values: InicialValues,
     actions: FormikHelpers<InicialValues>,
   ) => {
-    mutateFn(values)
+    mutate(values);
     actions.resetForm();
   };
-
 
   return (
     <Formik
@@ -83,11 +80,7 @@ const NoteForm = ({ handleModalClose, mutateFn}: NoteFormProps) => {
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            className={css.submitButton}
-            //   disabled="false"
-          >
+          <button type="submit" className={css.submitButton} disabled={false}>
             Create note
           </button>
         </div>
