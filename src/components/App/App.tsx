@@ -16,7 +16,7 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
-  const { data, isFetching, isError, error } = useNotesQuery({
+  const { data, isFetching, isError, error, isSuccess } = useNotesQuery({
     currentPage,
     searchInput,
   });
@@ -32,7 +32,7 @@ const App = () => {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox setSearchInput={setSearchInput} setPage={setPage} />
-        {showNoteList && data.totalPages >= 1 && (
+        {showNoteList && isSuccess && data.totalPages >= 1 && (
           <Pagination
             totalPages={data.totalPages}
             setPage={setPage}
@@ -50,7 +50,7 @@ const App = () => {
           <p>{`${error.message}`}</p>
         </ErrorComponent>
       )}
-      {showNoteList && <NoteList notes={data.notes} deleteNoteFn={deleteNote.mutate}/>}
+      {showNoteList && isSuccess && <NoteList notes={data.notes} deleteNoteFn={deleteNote.mutate}/>}
       {isModalOpen && (
         <Modal onBackDropClose={handleModalClose}>
           <NoteForm handleModalClose={handleModalClose} mutateFn={postNote.mutate} />
